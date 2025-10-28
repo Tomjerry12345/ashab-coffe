@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('mejas', function (Blueprint $table) {
             $table->id();
+            $table->string('publicId')->nullable();
             $table->string('nomorMeja')->unique();
             $table->string('qrCode')->nullable(); // path QR code di storage
             $table->timestamps();

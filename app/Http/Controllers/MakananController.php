@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Makanan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 
 class MakananController extends Controller
 {
@@ -29,7 +27,13 @@ class MakananController extends Controller
         $data = $request->only(['namaMakanan', 'hargaMakanan', 'stokMakanan']);
 
         if ($request->hasFile('fotoMakanan')) {
-            $data['fotoMakanan'] = $request->file('fotoMakanan')->store('makanan', 'public');
+            $path = $request->file('fotoMakanan')->getRealPath();
+            $result  = cloudinary()->uploadApi()->upload($path, [
+                "folder" => "makanan-image"
+            ]);
+
+            $data['fotoMakanan'] = $result["url"];
+            $data['publicIdMakanan'] = $result["public_id"];
         }
 
         if ($request->hasFile('model3D')) {
@@ -38,7 +42,12 @@ class MakananController extends Controller
                 return back()->withErrors(['model3D' => 'File 3D harus berformat .glb atau .gltf']);
             }
 
-            $data['model3D'] = $request->file('model3D')->store('makanan_3d', 'public');
+            $path = $request->file('model3D')->getRealPath();
+            $result  = cloudinary()->uploadApi()->upload($path, [
+                "folder" => "model3d-makanan-image"
+            ]);
+            $data['model3D'] = $result["url"];
+            $data['publicIdModel3dMakanan'] = $result["public_id"];
         }
 
         Makanan::create($data);
@@ -60,9 +69,15 @@ class MakananController extends Controller
 
         if ($request->hasFile('fotoMakanan')) {
             if ($makanan->fotoMakanan) {
-                Storage::disk('public')->delete($makanan->fotoMakanan);
+                cloudinary()->uploadApi()->destroy($makanan->publicId);
             }
-            $data['fotoMakanan'] = $request->file('fotoMakanan')->store('makanan', 'public');
+
+            $path = $request->file('fotoMakanan')->getRealPath();
+            $result  = cloudinary()->uploadApi()->upload($path, [
+                "folder" => "makanan-image"
+            ]);
+            $data['fotoMakanan'] = $result["url"];
+            $data['publicIdMakanan'] = $result["public_id"];
         }
 
         if ($request->hasFile('model3D')) {
@@ -72,10 +87,15 @@ class MakananController extends Controller
             }
 
             if ($makanan->model3D) {
-                Storage::disk('public')->delete($makanan->model3D);
+                cloudinary()->uploadApi()->destroy($makanan->publicIdModel3d);
             }
 
-            $data['model3D'] = $request->file('model3D')->store('makanan_3d', 'public');
+            $path = $request->file('model3D')->getRealPath();
+            $result  = cloudinary()->uploadApi()->upload($path, [
+                "folder" => "model3d-makanan-image"
+            ]);
+            $data['model3D'] = $result["url"];
+            $data['publicIdModel3dMakanan'] = $result["public_id"];
         }
 
         $makanan->update($data);
@@ -85,9 +105,9 @@ class MakananController extends Controller
 
     public function destroy(Makanan $makanan)
     {
-        if ($makanan->fotoMakanan) {
-            Storage::disk('public')->delete($makanan->fotoMakanan);
-        }
+        cloudinary()->uploadApi()->destroy($makanan->publicIdMakanan);
+        cloudinary()->uploadApi()->destroy($makanan->publicIdModel3dMakanan);
+
         $makanan->delete();
 
         return redirect()->route('makanan.index')->with('success', 'Makanan berhasil dihapus!');

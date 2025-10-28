@@ -10,6 +10,8 @@ class Makanan extends Model
     use HasFactory;
 
     protected $fillable = [
+        'publicIdMakanan',
+        'publicIdModel3dMakanan',
         'namaMakanan',
         'hargaMakanan',
         'stokMakanan',

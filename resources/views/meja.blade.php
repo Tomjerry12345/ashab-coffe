@@ -42,7 +42,7 @@
         @foreach($mejas as $meja)
         <div class="col-md-3">
             <div class="card shadow-sm p-3 text-center">
-                <img src="{{ asset('storage/' . $meja->qrCode) }}" class="img-fluid mb-2" alt="QR Meja {{ $meja->nomorMeja }}">
+                <img src="{{ $meja->qrCode }}" class="img-fluid mb-2" alt="QR Meja {{ $meja->nomorMeja }}">
                 <p class="fw-semibold text-danger">Meja {{ $meja->nomorMeja }}</p>
                 <div class="d-flex justify-content-around mt-2">
                     <a href="{{ asset('storage/' . $meja->qrCode) }}" class="btn btn-sm btn-info text-white" download>

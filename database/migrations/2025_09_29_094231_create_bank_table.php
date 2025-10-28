@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
+            $table->string('publicId')->nullable();
             $table->string('nama_bank');
             $table->string('gambar_qris'); // path ke file gambar QRIS
             $table->timestamps();

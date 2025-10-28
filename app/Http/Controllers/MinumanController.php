@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Minuman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class MinumanController extends Controller
 {
@@ -30,7 +29,13 @@ class MinumanController extends Controller
             $data = $request->only(['namaMinuman', 'hargaMinuman', 'stokMinuman']);
 
             if ($request->hasFile('fotoMinuman')) {
-                $data['fotoMinuman'] = $request->file('fotoMinuman')->store('minuman', 'public');
+                $path = $request->file('fotoMinuman')->getRealPath();
+                $result  = cloudinary()->uploadApi()->upload($path, [
+                    "folder" => "minuman-image"
+                ]);
+
+                $data['fotoMinuman'] = $result["url"];
+                $data['publicIdMinuman'] = $result["public_id"];
             }
 
             if ($request->hasFile('model3D')) {
@@ -39,7 +44,13 @@ class MinumanController extends Controller
                     return back()->withErrors(['model3D' => 'File 3D harus berformat .glb atau .gltf']);
                 }
 
-                $data['model3D'] = $request->file('model3D')->store('minuman_3d', 'public');
+                $path = $request->file('model3D')->getRealPath();
+                $result  = cloudinary()->uploadApi()->upload($path, [
+                    "folder" => "model3d-minuman-image"
+                ]);
+
+                $data['model3D'] = $result["url"];
+                $data['publicIdModel3dMinuman'] = $result["public_id"];
             }
 
             Minuman::create($data);
@@ -65,9 +76,14 @@ class MinumanController extends Controller
 
         if ($request->hasFile('fotoMinuman')) {
             if ($minuman->fotoMinuman) {
-                Storage::disk('public')->delete($minuman->fotoMinuman);
+                cloudinary()->uploadApi()->destroy($minuman->publicId);
             }
-            $data['fotoMinuman'] = $request->file('fotoMinuman')->store('minuman', 'public');
+            $path = $request->file('fotoMinuman')->getRealPath();
+            $result  = cloudinary()->uploadApi()->upload($path, [
+                "folder" => "minuman-image"
+            ]);
+            $data['fotoMinuman'] = $result["url"];
+            $data['publicIdMinuman'] = $result["public_id"];
         }
 
         if ($request->hasFile('model3D')) {
@@ -76,11 +92,16 @@ class MinumanController extends Controller
                 return back()->withErrors(['model3D' => 'File 3D harus berformat .glb atau .gltf']);
             }
 
-            if ($minuman->modelZ3D) {
-                Storage::disk('public')->delete($minuman->model3D);
+            if ($minuman->model3D) {
+                cloudinary()->uploadApi()->destroy($minuman->publicIdModel3d);
             }
 
-            $data['model3D'] = $request->file('model3D')->store('minuman_3d', 'public');
+            $path = $request->file('model3D')->getRealPath();
+            $result  = cloudinary()->uploadApi()->upload($path, [
+                "folder" => "model3d-minuman-image"
+            ]);
+            $data['model3D'] = $result["url"];
+            $data['publicIdModel3dMinuman'] = $result["public_id"];
         }
 
         $minuman->update($data);
@@ -90,9 +111,9 @@ class MinumanController extends Controller
 
     public function destroy(Minuman $minuman)
     {
-        if ($minuman->fotoMinuman) {
-            Storage::disk('public')->delete($minuman->fotoMinuman);
-        }
+        cloudinary()->uploadApi()->destroy($minuman->publicIdMinuman);
+        cloudinary()->uploadApi()->destroy($minuman->publicIdModel3dMinuman);
+
         $minuman->delete();
 
         return redirect()->route('minuman.index')->with('success', 'Minuman berhasil dihapus!');

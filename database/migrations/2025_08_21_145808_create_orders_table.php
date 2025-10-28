@@ -15,7 +15,8 @@ return new class extends Migration
             $table->string('nama');      // Nama makanan/minuman
             $table->decimal('harga', 10, 2); // Harga per item
             $table->integer('jumlah');    // Qty
-            $table->text('catatan')->nullable();
+            $table->text('catatan');
+            $table->string('payment_method');
             $table->enum('status', ['pending', 'cooking', 'finished', 'cancelled'])->default('pending');
             $table->timestamps();
 

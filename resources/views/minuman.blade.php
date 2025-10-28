@@ -135,11 +135,11 @@
                         <td>Rp {{ number_format($minuman->hargaMinuman, 0, ',', '.') }}</td>
                         <td>{{ $minuman->stokMinuman }}</td>
                         <td>
-                            <img src="{{ asset('storage/'.$minuman->fotoMinuman) }}" alt="{{ $minuman->namaMinuman }}" width="60">
+                            <img src="{{ $minuman->fotoMinuman }}" alt="{{ $minuman->namaMinuman }}" width="60">
                         </td>
                         <td class="text-center align-middle" style="width: 120px;">
                             @if ($minuman->model3D)
-                            <model-viewer src="{{ asset('storage/'.$minuman->model3D) }}"
+                            <model-viewer src="{{ $minuman->model3D }}"
                                 alt="{{ $minuman->namaMinuman }}"
                                 camera-controls auto-rotate
                                 style="width: 60px; height: 60px; margin: auto; display: block;">
@@ -216,7 +216,7 @@
                                             <label for="fotoMinuman" class="form-label">Foto Minuman</label>
                                             <input type="file" class="form-control" name="fotoMinuman" accept="image/*">
                                             <small>Foto sekarang:</small><br>
-                                            <img src="{{ asset('storage/'.$minuman->fotoMinuman) }}" width="80">
+                                            <img src="{{ $minuman->fotoMinuman }}" width="80">
                                         </div>
 
                                         <div class="mb-3">
@@ -226,7 +226,7 @@
 
                                             <small>Model 3D sekarang:</small><br>
                                             @if ($minuman->model3D)
-                                            <model-viewer src="{{ asset('storage/'.$minuman->model3D) }}"
+                                            <model-viewer src="{{ $minuman->model3D }}"
                                                 camera-controls auto-rotate
                                                 style="width: 60px; height: 60px; margin: auto; display: block;">
                                             </model-viewer>

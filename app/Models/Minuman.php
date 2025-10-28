@@ -11,6 +11,8 @@ class Minuman extends Model
 
     protected $table = 'minumans'; // karena plural irregular
     protected $fillable = [
+        'publicIdMinuman',
+        'publicIdModel3dMinuman',
         'namaMinuman',
         'hargaMinuman',
         'stokMinuman',

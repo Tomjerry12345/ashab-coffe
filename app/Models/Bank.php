@@ -9,5 +9,5 @@ class Bank extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nama_bank', 'gambar_qris'];
+    protected $fillable = ['publicId', 'nama_bank', 'gambar_qris'];
 }

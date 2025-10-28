@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('minumans', function (Blueprint $table) {
             $table->id();
+            $table->string('publicIdMinuman')->nullable();
+            $table->string('publicIdModel3dMinuman')->nullable();
             $table->string('namaMinuman');
             $table->decimal('hargaMinuman', 10, 2);
             $table->integer('stokMinuman');
             $table->string('fotoMinuman')->nullable();
+            $table->string('model3D')->nullable();
             $table->timestamps();
         });
     }

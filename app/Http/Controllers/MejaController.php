@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Meja;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class MejaController extends Controller
 {
@@ -18,73 +17,48 @@ class MejaController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create() {}
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'nomorMeja' => 'required|string|max:10|unique:mejas,nomorMeja',
         ]);
 
         $nomorMeja = $request->nomorMeja;
-        // $link = url("/meja/$nomorMeja");
 
-        $host = "10.223.205.225";
+        $host = request()->getHost();
         $port = request()->getPort();
         $link = "http://$host:$port/order/meja/$nomorMeja/minuman";
 
         // Generate QR code pakai layanan eksternal
         $qrImage = file_get_contents("https://api.qrserver.com/v1/create-qr-code/?data=$link&size=200x200");
 
-        $fileName = 'qr_meja_' . $nomorMeja . '.png';
-        Storage::disk('public')->put("qr_meja/$fileName", $qrImage);
+        // 🔹 Simpan sementara ke file temp
+        $tempFile = tempnam(sys_get_temp_dir(), 'qr_');
+        file_put_contents($tempFile, $qrImage);
+
+        $uploadedFileUrl = cloudinary()->uploadApi()->upload($tempFile, [
+            "folder" => "qr-image"
+        ]);
+        $result = $uploadedFileUrl->getArrayCopy();
+
+        // 🔹 Hapus file sementara
+        @unlink($tempFile);
 
         Meja::create([
+            'publicId' => $result["public_id"],
             'nomorMeja' => $nomorMeja,
-            'qrCode' => "qr_meja/$fileName"
+            'qrCode' => $result["url"],
         ]);
 
         return redirect()->back()->with('success', 'Meja berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Meja $meja)
     {
-        // Hapus file QR
-        if ($meja->qrCode && Storage::disk('public')->exists($meja->qrCode)) {
-            Storage::disk('public')->delete($meja->qrCode);
-        }
+        cloudinary()->uploadApi()->destroy($meja->publicId);
 
         $meja->delete();
 

@@ -50,10 +50,10 @@
         @foreach($banks as $bank)
         <div class="col-md-3">
             <div class="card shadow-sm p-3 text-center">
-                <img src="{{ asset('storage/' . $bank->gambar_qris) }}" class="img-fluid mb-2" alt="QRIS {{ $bank->nama_bank }}">
+                <img src="{{ $bank->gambar_qris }}" class="img-fluid mb-2" alt="QRIS {{ $bank->nama_bank }}">
                 <p class="fw-semibold text-danger">{{ $bank->nama_bank }}</p>
                 <div class="d-flex justify-content-around mt-2">
-                    <a href="{{ asset('storage/' . $bank->gambar_qris) }}" class="btn btn-sm btn-info text-white" download>
+                    <a href="{{ $bank->gambar_qris }}" class="btn btn-sm btn-info text-white" download>
                         <i class="fas fa-download"></i>
                     </a>
                     <form action="{{ route('bank.destroy', $bank->id) }}" method="POST">

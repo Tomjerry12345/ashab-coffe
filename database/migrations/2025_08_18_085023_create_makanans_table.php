@@ -13,10 +13,13 @@ return new class extends Migration
     {
         Schema::create('makanans', function (Blueprint $table) {
             $table->id();
+            $table->string('publicIdMakanan')->nullable();
+            $table->string('publicIdModel3dMakanan')->nullable();
             $table->string('namaMakanan');
             $table->integer('hargaMakanan');
             $table->integer('stokMakanan');
             $table->string('fotoMakanan')->nullable();
+            $table->string('model3D')->nullable();
             $table->timestamps();
         });
     }

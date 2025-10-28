@@ -145,12 +145,12 @@
                         <td class="align-middle">Rp {{ number_format($makanan->hargaMakanan,0,',','.') }}</td>
                         <td class="text-center align-middle">{{ $makanan->stokMakanan }}</td>
                         <td class="text-center align-middle">
-                            <img src="{{ asset('storage/'.$makanan->fotoMakanan) }}"
+                            <img src="{{ $makanan->fotoMakanan }}"
                                 alt="{{ $makanan->namaMakanan }}" width="60" height="60" style="object-fit: cover;">
                         </td>
                         <td class="text-center align-middle" style="width: 120px;">
                             @if ($makanan->model3D)
-                            <model-viewer src="{{ asset('storage/'.$makanan->model3D) }}"
+                            <model-viewer src="{{ $makanan->model3D }}"
                                 alt="{{ $makanan->namaMakanan }}"
                                 camera-controls auto-rotate
                                 style="width: 60px; height: 60px; margin: auto; display: block;">
@@ -216,7 +216,7 @@
                                             <label for="fotoMakanan" class="form-label">Foto Makanan</label>
                                             <input type="file" class="form-control" name="fotoMakanan" accept="image/*">
                                             <small>Foto sekarang:</small><br>
-                                            <img src="{{ asset('storage/'.$makanan->fotoMakanan) }}" width="80">
+                                            <img src="{{ $makanan->fotoMakanan }}" width="80">
                                         </div>
 
                                         <div class="mb-3">
@@ -225,7 +225,7 @@
                                                 id="model3D" name="model3D" accept=".glb,.gltf">
                                             <small>Model 3D sekarang:</small><br>
                                             @if ($makanan->model3D)
-                                            <model-viewer src="{{ asset('storage/'.$makanan->model3D) }}"
+                                            <model-viewer src="{{ $makanan->model3D }}"
                                                 camera-controls auto-rotate
                                                 style="width: 60px; height: 60px; margin: auto; display: block;">
                                             </model-viewer>

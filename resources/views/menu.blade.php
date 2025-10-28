@@ -395,7 +395,7 @@
                 <a class="nav-link" href="#">Daftar Menu</a>
             </div>
             <a class="navbar-brand mx-auto" href="#">Ashbab Coffe
-                <img src="{{ asset('storage/logo/logo.png') }}" alt="Ashbab Coffee" height="40">
+                <!-- <img src="{{ asset('storage/logo/logo.png') }}" alt="Ashbab Coffee" height="40"> -->
             </a>
         </div>
     </nav>
@@ -431,7 +431,7 @@
                     <div class="card-inner" onclick="flipCard(this)">
                         <!-- Sisi Depan -->
                         <div class="card-front">
-                            <img src="{{ asset('storage/'.$menu->foto) ?? 'https://dummyimage.com/200x200/f4dfe3/ffffff&text=🍹' }}"
+                            <img src="{{ $menu->foto ?? 'https://dummyimage.com/200x200/f4dfe3/ffffff&text=🍹' }}"
                                 class="card-img-top"
                                 alt="{{ $menu->nama }}" />
                         </div>
@@ -442,7 +442,7 @@
                                 onclick="event.stopPropagation(); flipCard(this.closest('.card-inner'));"
                                 aria-label="kembali">⟲</button>
 
-                            <model-viewer src="{{ asset('storage/'.$menu->model3D) }}"
+                            <model-viewer src="{{ $menu->model3D }}"
                                 alt="{{ $menu->nama }} 3D"
                                 camera-controls
                                 auto-rotate
@@ -459,7 +459,7 @@
                             data-name="{{ $menu->nama }}"
                             data-price="{{ $menu->harga }}"
                             data-kategori="{{ $kategori }}"
-                            data-foto="{{ asset('storage/'.$menu->foto) }}">
+                            data-foto="{{ $menu->foto }}">
                             <i class=""></i> Tambah
                         </button>
                     </div>
@@ -519,7 +519,7 @@
                         <select class="form-select" id="bankSelect">
                             <option value="">-- Pilih Bank --</option>
                             @foreach($banks as $bank)
-                            <option value="{{ asset('storage/' . $bank->gambar_qris) }}">{{ $bank->nama_bank }}</option>
+                            <option value="{{ $bank->gambar_qris }}">{{ $bank->nama_bank }}</option>
                             @endforeach
                         </select>
                     </div>

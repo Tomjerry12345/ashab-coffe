@@ -48,8 +48,6 @@ class OrderController extends Controller
             $items = collect();
         }
 
-        Log::info($items);
-
         $banks = Bank::all();
 
 
@@ -67,8 +65,6 @@ class OrderController extends Controller
 
         $orderKey = Str::uuid(); // ID unik per transaksi
         $antrian  = $this->generateQueueNumber();
-
-        Log::info($payment);
 
         foreach ($cart as $item) {
             Order::create([
@@ -90,57 +86,6 @@ class OrderController extends Controller
             'order_key' => $orderKey
         ]);
     }
-
-    // public function orderBaru()
-    // {
-    //     // $orders = [
-    //     //     (object)[
-    //     //         'id' => 1,
-    //     //         'meja' => (object)['nomorMeja' => '02'],
-    //     //         'total' => 22000,
-    //     //         'payment_method' => 'cash',
-    //     //         'status' => 'butuh konfirmasi',
-    //     //         'items' => [
-    //     //             (object)['nama' => 'Nasi Goreng', 'pivot' => (object)['qty' => 2]],
-    //     //             (object)['nama' => 'Es Teh', 'pivot' => (object)['qty' => 1]],
-    //     //         ],
-    //     //     ],
-    //     //     (object)[
-    //     //         'id' => 2,
-    //     //         'meja' => (object)['nomorMeja' => '05'],
-    //     //         'total' => 45000,
-    //     //         'payment_method' => 'qris',
-    //     //         'status' => 'butuh konfirmasi',
-    //     //         'items' => [
-    //     //             (object)['nama' => 'Mie Ayam', 'pivot' => (object)['qty' => 1]],
-    //     //             (object)['nama' => 'Jus Alpukat', 'pivot' => (object)['qty' => 2]],
-    //     //         ],
-    //     //     ],
-    //     // ];
-
-    //     $rows = Order::where('status', 'pending')
-    //         ->orderBy('created_at', 'asc')
-    //         ->get();
-
-    //     // Group berdasarkan order_key
-    //     $orders = $rows->groupBy('order_key')->map(function ($group) {
-    //         return (object)[
-    //             'id'            => $group->first()->id,
-    //             'meja_id'       => $group->first()->meja_id,
-    //             'status'        => $group->first()->status,
-    //             'created_at'    => $group->first()->created_at,
-    //             'items'         => $group->map(function ($item) {
-    //                 return (object)[
-    //                     'nama'   => $item->nama,
-    //                     'jumlah' => $item->jumlah,
-    //                     'harga'  => $item->harga,
-    //                 ];
-    //             })->values(),
-    //         ];
-    //     })->values();
-
-    //     return view('order.baru', compact('orders'));
-    // }
 
     public function orderBaru()
     {
@@ -248,39 +193,6 @@ class OrderController extends Controller
         return redirect()->back()->with('success', 'Pesanan dibatalkan.');
     }
 
-    // public function rekap(Request $request)
-    // {
-    //     // filter tanggal / jenis kalau perlu
-    //     $tanggal = $request->get('tanggal', date('Y-m-d'));
-    //     $jenis   = $request->get('jenis', 'harian');
-
-    //     // data dummy
-    //     $orders = [
-    //         (object)[
-    //             'id' => 1,
-    //             'meja' => (object)['nomorMeja' => '02'],
-    //             'total' => 22000,
-    //             'payment_method' => 'cash',
-    //             'items' => [
-    //                 (object)['nama' => 'Nasi Goreng', 'pivot' => (object)['qty' => 2]],
-    //                 (object)['nama' => 'Es Teh', 'pivot' => (object)['qty' => 1]],
-    //             ]
-    //         ],
-    //         (object)[
-    //             'id' => 2,
-    //             'meja' => (object)['nomorMeja' => '05'],
-    //             'total' => 45000,
-    //             'payment_method' => 'qris',
-    //             'items' => [
-    //                 (object)['nama' => 'Mie Ayam', 'pivot' => (object)['qty' => 1]],
-    //                 (object)['nama' => 'Jus Alpukat', 'pivot' => (object)['qty' => 2]],
-    //             ]
-    //         ],
-    //     ];
-
-    //     return view('order.rekap', compact('orders', 'tanggal', 'jenis'));
-    // }
-
     public function orderMe($meja_id)
     {
         $orders = Order::where('meja_id', $meja_id)
@@ -312,12 +224,6 @@ class OrderController extends Controller
 
         return response()->json($orders->values());
     }
-
-    // public function konfirmasi()
-    // {
-
-    //     return view('pesanan.baru');
-    // }
 
     public function generateQueueNumber()
     {

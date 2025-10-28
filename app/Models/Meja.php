@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Meja extends Model
 {
-    protected $fillable = ['nomorMeja', 'qrCode'];
+    protected $fillable = ['publicId', 'nomorMeja', 'qrCode'];
 }
