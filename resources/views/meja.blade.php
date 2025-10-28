@@ -45,7 +45,7 @@
                 <img src="{{ $meja->qrCode }}" class="img-fluid mb-2" alt="QR Meja {{ $meja->nomorMeja }}">
                 <p class="fw-semibold text-danger">Meja {{ $meja->nomorMeja }}</p>
                 <div class="d-flex justify-content-around mt-2">
-                    <a href="{{ asset('storage/' . $meja->qrCode) }}" class="btn btn-sm btn-info text-white" download>
+                    <a href="{{ $meja->qrCode }}" class="btn btn-sm btn-info text-white" download>
                         <i class="fas fa-download"></i>
                     </a>
                     <!-- <a href="{{ url("http://10.223.205.225:8000/order/meja/{$meja->nomorMeja}/minuman") }}" class="btn btn-sm btn-primary">

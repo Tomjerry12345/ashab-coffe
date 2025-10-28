@@ -28,9 +28,7 @@ class MejaController extends Controller
 
         $nomorMeja = $request->nomorMeja;
 
-        $host = request()->getHost();
-        $port = request()->getPort();
-        $link = "http://$host:$port/order/meja/$nomorMeja/minuman";
+        $link = env('APP_URL') . "/order/meja/$nomorMeja/minuman";
 
         // Generate QR code pakai layanan eksternal
         $qrImage = file_get_contents("https://api.qrserver.com/v1/create-qr-code/?data=$link&size=200x200");
