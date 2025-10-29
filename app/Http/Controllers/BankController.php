@@ -47,7 +47,9 @@ class BankController extends Controller
      */
     public function destroy(Bank $bank)
     {
-        cloudinary()->uploadApi()->destroy($bank->publicId);
+        if ($bank->publicId) {
+            cloudinary()->uploadApi()->destroy($bank->publicId);
+        }
 
         $bank->delete();
 

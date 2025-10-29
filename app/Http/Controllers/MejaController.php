@@ -56,7 +56,9 @@ class MejaController extends Controller
 
     public function destroy(Meja $meja)
     {
-        cloudinary()->uploadApi()->destroy($meja->publicId);
+        if ($meja->publicId) {
+            cloudinary()->uploadApi()->destroy($meja->publicId);
+        }
 
         $meja->delete();
 
