@@ -32,7 +32,7 @@ class MakananController extends Controller
                 "folder" => "makanan-image"
             ]);
 
-            $data['fotoMakanan'] = $result["url"];
+            $data['fotoMakanan'] = $result["secure_url"];
             $data['publicIdMakanan'] = $result["public_id"];
         }
 
@@ -46,7 +46,8 @@ class MakananController extends Controller
             $result  = cloudinary()->uploadApi()->upload($path, [
                 "folder" => "model3d-makanan-image"
             ]);
-            $data['model3D'] = $result["url"];
+
+            $data['model3D'] = $result["secure_url"];
             $data['publicIdModel3dMakanan'] = $result["public_id"];
         }
 
@@ -68,7 +69,7 @@ class MakananController extends Controller
         $data = $request->only(['namaMakanan', 'hargaMakanan', 'stokMakanan']);
 
         if ($request->hasFile('fotoMakanan')) {
-            if ($makanan->fotoMakanan) {
+            if ($makanan->publicId) {
                 cloudinary()->uploadApi()->destroy($makanan->publicId);
             }
 
@@ -76,7 +77,7 @@ class MakananController extends Controller
             $result  = cloudinary()->uploadApi()->upload($path, [
                 "folder" => "makanan-image"
             ]);
-            $data['fotoMakanan'] = $result["url"];
+            $data['fotoMakanan'] = $result["secure_url"];
             $data['publicIdMakanan'] = $result["public_id"];
         }
 
@@ -86,15 +87,15 @@ class MakananController extends Controller
                 return back()->withErrors(['model3D' => 'File 3D harus berformat .glb atau .gltf']);
             }
 
-            if ($makanan->model3D) {
-                cloudinary()->uploadApi()->destroy($makanan->publicIdModel3d);
+            if ($makanan->publicIdModel3dMakanan) {
+                cloudinary()->uploadApi()->destroy($makanan->publicIdModel3dMakanan);
             }
 
             $path = $request->file('model3D')->getRealPath();
             $result  = cloudinary()->uploadApi()->upload($path, [
                 "folder" => "model3d-makanan-image"
             ]);
-            $data['model3D'] = $result["url"];
+            $data['model3D'] = $result["secure_url"];
             $data['publicIdModel3dMakanan'] = $result["public_id"];
         }
 
@@ -105,8 +106,13 @@ class MakananController extends Controller
 
     public function destroy(Makanan $makanan)
     {
-        cloudinary()->uploadApi()->destroy($makanan->publicIdMakanan);
-        cloudinary()->uploadApi()->destroy($makanan->publicIdModel3dMakanan);
+        if ($makanan->publicIdMakanan) {
+            cloudinary()->uploadApi()->destroy($makanan->publicIdMakanan);
+        }
+
+        if ($makanan->publicIdModel3dMakanan) {
+            cloudinary()->uploadApi()->destroy($makanan->publicIdModel3dMakanan);
+        }
 
         $makanan->delete();
 

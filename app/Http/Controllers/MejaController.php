@@ -48,7 +48,7 @@ class MejaController extends Controller
         Meja::create([
             'publicId' => $result["public_id"],
             'nomorMeja' => $nomorMeja,
-            'qrCode' => $result["url"],
+            'qrCode' => $result["secure_url"],
         ]);
 
         return redirect()->back()->with('success', 'Meja berhasil ditambahkan!');

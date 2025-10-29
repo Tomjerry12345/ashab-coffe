@@ -34,7 +34,7 @@ class MinumanController extends Controller
                     "folder" => "minuman-image"
                 ]);
 
-                $data['fotoMinuman'] = $result["url"];
+                $data['fotoMinuman'] = $result["secure_url"];
                 $data['publicIdMinuman'] = $result["public_id"];
             }
 
@@ -49,7 +49,7 @@ class MinumanController extends Controller
                     "folder" => "model3d-minuman-image"
                 ]);
 
-                $data['model3D'] = $result["url"];
+                $data['model3D'] = $result["secure_url"];
                 $data['publicIdModel3dMinuman'] = $result["public_id"];
             }
 
@@ -75,14 +75,14 @@ class MinumanController extends Controller
         $data = $request->only(['namaMinuman', 'hargaMinuman', 'stokMinuman']);
 
         if ($request->hasFile('fotoMinuman')) {
-            if ($minuman->fotoMinuman) {
-                cloudinary()->uploadApi()->destroy($minuman->publicId);
+            if ($minuman->publicIdMinuman) {
+                cloudinary()->uploadApi()->destroy($minuman->publicIdMinuman);
             }
             $path = $request->file('fotoMinuman')->getRealPath();
             $result  = cloudinary()->uploadApi()->upload($path, [
                 "folder" => "minuman-image"
             ]);
-            $data['fotoMinuman'] = $result["url"];
+            $data['fotoMinuman'] = $result["secure_url"];
             $data['publicIdMinuman'] = $result["public_id"];
         }
 
@@ -92,15 +92,15 @@ class MinumanController extends Controller
                 return back()->withErrors(['model3D' => 'File 3D harus berformat .glb atau .gltf']);
             }
 
-            if ($minuman->model3D) {
-                cloudinary()->uploadApi()->destroy($minuman->publicIdModel3d);
+            if ($minuman->publicIdModel3dMinuman) {
+                cloudinary()->uploadApi()->destroy($minuman->publicIdModel3dMinuman);
             }
 
             $path = $request->file('model3D')->getRealPath();
             $result  = cloudinary()->uploadApi()->upload($path, [
                 "folder" => "model3d-minuman-image"
             ]);
-            $data['model3D'] = $result["url"];
+            $data['model3D'] = $result["secure_url"];
             $data['publicIdModel3dMinuman'] = $result["public_id"];
         }
 
@@ -111,8 +111,13 @@ class MinumanController extends Controller
 
     public function destroy(Minuman $minuman)
     {
-        cloudinary()->uploadApi()->destroy($minuman->publicIdMinuman);
-        cloudinary()->uploadApi()->destroy($minuman->publicIdModel3dMinuman);
+        if ($minuman->publicIdMinuman) {
+            cloudinary()->uploadApi()->destroy($minuman->publicIdMinuman);
+        }
+
+        if ($minuman->publicIdModel3dMinuman) {
+            cloudinary()->uploadApi()->destroy($minuman->publicIdModel3dMinuman);
+        }
 
         $minuman->delete();
 

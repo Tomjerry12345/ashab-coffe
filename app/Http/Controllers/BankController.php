@@ -36,7 +36,7 @@ class BankController extends Controller
         Bank::create([
             'publicId' => $result["public_id"],
             'nama_bank' => $request->nama_bank,
-            'gambar_qris' => $result["url"]
+            'gambar_qris' => $result["secure_url"]
         ]);
 
         return redirect()->back()->with('success', 'Bank berhasil ditambahkan!');
