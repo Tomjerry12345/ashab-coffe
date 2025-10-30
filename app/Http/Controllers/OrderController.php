@@ -66,19 +66,39 @@ class OrderController extends Controller
         $orderKey = Str::uuid(); // ID unik per transaksi
         $antrian  = $this->generateQueueNumber();
 
+        // foreach ($cart as $item) {
+        //     Order::create([
+        //         'meja_id'   => $meja_id,
+        //         'order_key' => $orderKey,
+        //         'antrian' => $antrian,
+        //         'nama'      => $item['name'],
+        //         'harga'     => $item['price'],
+        //         'jumlah'    => $item['qty'],
+        //         'catatan'   => $item['note'] ?? null,
+        //         "payment_method" => $payment ?? null,
+        //         'status'    => 'pending'
+        //     ]);
+        // }
+
+        $orders = [];
+
         foreach ($cart as $item) {
-            Order::create([
+            $orders[] = [
                 'meja_id'   => $meja_id,
                 'order_key' => $orderKey,
-                'antrian' => $antrian,
+                'antrian'   => $antrian,
                 'nama'      => $item['name'],
                 'harga'     => $item['price'],
                 'jumlah'    => $item['qty'],
                 'catatan'   => $item['note'] ?? null,
-                "payment_method" => $payment ?? null,
-                'status'    => 'pending'
-            ]);
+                'payment_method' => $payment ?? "cash",
+                'status'    => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
+
+        Order::insert($orders);
 
         return response()->json([
             'success' => true,
