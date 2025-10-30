@@ -170,30 +170,34 @@
         }
 
         .avatar-circle {
-        width: 100px;          /* atur sesuai keinginan */
-        height: 100px;
-        border-radius: 50%;    /* bikin lingkaran */
-        overflow: hidden;      /* potong gambar biar bulat */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f0f0f0;   /* warna latar fallback */
+            width: 100px;
+            /* atur sesuai keinginan */
+            height: 100px;
+            border-radius: 50%;
+            /* bikin lingkaran */
+            overflow: hidden;
+            /* potong gambar biar bulat */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            /* warna latar fallback */
         }
 
         .avatar-circle img {
-        width: 100%;
-        height: 125%;
-        object-fit: cover;     /* gambar memenuhi lingkaran */
-        display: block;
+            width: 100%;
+            height: 125%;
+            object-fit: cover;
+            /* gambar memenuhi lingkaran */
+            display: block;
         }
-
     </style>
 </head>
 
 <body>
     <div class="login-container" role="main" aria-label="Member login form">
         <div class="avatar-circle" aria-hidden="true">
-             <img src="storage/logo/logo.png" alt="User Avatar">
+            <img src="/logo.png" alt="User Avatar">
         </div>
         <h2 class="login-title">Admin Ashbab Coffee</h2>
         <form method="POST" action="{{ route('login') }}">
