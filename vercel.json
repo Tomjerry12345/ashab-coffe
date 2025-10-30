@@ -6,6 +6,11 @@
     },
     "routes": [
         {
+            "src": "/(.*)\\.(?:png|jpg|jpeg|gif|svg|css|js|ico|woff2?|ttf|eot|json|glb)$",
+            "dest": "/public/$1.$2"
+        },
+
+        {
             "src": "/(.*)",
             "dest": "/api/index.php"
         }
@@ -13,7 +18,7 @@
     "env": {
         "APP_ENV": "production",
         "APP_DEBUG": "true",
-        "APP_URL": "https://yourprojectdomain.com",
+        "APP_URL": "https://ashab-coffe.vercel.app",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
