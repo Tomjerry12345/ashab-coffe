@@ -846,69 +846,91 @@
             updateFloatingCount(); // update badge
         }
 
-        function loadPesananSaya() {
-            const floatingLoadPesanan = document.getElementById('floatingOrdersBtn');
-
-            return fetch(`/order/me/${mejaId}`)
-                .then(res => res.json())
-                .then(data => {
-                    pesananSayaCache = data; // simpan hasil ke cache
-                    renderPesananSaya(data);
-                })
-                .catch(err => console.error(err));
-        }
-
-        function renderPesananSaya(data) {
+        function loadPesananSaya() { 
+    fetch(`/order/me/${mejaId}`)
+        .then(res => res.json())
+        .then(data => {
             let html = "";
 
             if (data.length === 0) {
                 html = `
-            <div class="p-3 border rounded bg-light text-center">
-                <p><strong>Belum ada pesanan</strong></p>
-            </div>
-        `;
-            } else {
-                const floatingLoadPesanan = document.getElementById('floatingOrdersBtn');
-
-                data.forEach(order => {
-                    let itemsHtml = "";
-                    order.pesanan.forEach(item => {
-                        itemsHtml += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        ${item.nama_menu}
-                        <span class="badge bg-primary rounded-pill">${item.jumlah}</span>
-                    </li>
+                    <div class="p-3 border rounded bg-light text-center">
+                        <p><strong>Belum ada pesanan</strong></p>
+                    </div>
                 `;
+            } else {
+                data.forEach(order => {
+
+                    let itemsHtml = "";
+                    let daftarPesanan = "";
+                    let totalItem = 0;
+                    let totalHarga = 0;
+
+                    order.pesanan.forEach(item => {
+
+                        // tampil list di atas (badge jumlah)
+                        itemsHtml += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${item.nama_menu}
+                                <span class="badge bg-primary rounded-pill">${item.jumlah}</span>
+                            </li>
+                        `;
+
+                        let hargaSatuan = parseInt(item.harga);
+                        let subtotal = hargaSatuan * parseInt(item.jumlah);
+
+                        // list per item yang baru
+                        daftarPesanan += `
+                            <p class="mb-1">• ${item.nama_menu} — ${item.jumlah} × Rp ${hargaSatuan.toLocaleString('id-ID')} = <strong>Rp ${subtotal.toLocaleString('id-ID')}</strong></p>
+                        `;
+
+                        totalItem += parseInt(item.jumlah);
+                        totalHarga += subtotal;
                     });
 
+                    // status badge
                     let statusClass = "bg-secondary";
                     if (order.status === "pending") statusClass = "bg-warning text-dark";
                     else if (order.status === "cooking") statusClass = "bg-info text-dark";
                     else if (order.status === "done") statusClass = "bg-success";
 
                     html += `
-                <div class="mb-3 border rounded p-2">
-                    <ul class="list-group mb-2">${itemsHtml}</ul>
-                    <div class="p-2 border-top bg-light">
-                        <p><strong>No Antrian:</strong> ${order.antrian ?? "Belum ada"}</p>
-                        <p><strong>Status:</strong> <span class="badge ${statusClass}">${order.status}</span></p>
-                        <p><strong>Jumlah antrian sebelum Anda:</strong> ${order.sebelum_saya}</p>
-                    </div>
-                </div>
-            `;
-                });
+                        <div class="mb-3 border rounded p-2">
 
-                floatingLoadPesanan.style.setProperty('--count', `"${data.length}"`);
+                            <ul class="list-group mb-2">
+                                ${itemsHtml}
+                            </ul>
+
+                            <div class="p-2 border-top bg-light">
+                                <p><strong>No Antrian:</strong> ${order.antrian ?? "Belum ada"}</p>
+                                <p><strong>Status:</strong> <span class="badge ${statusClass}">${order.status}</span></p>
+                                <p><strong>Jumlah antrian sebelum Anda:</strong> ${order.sebelum_saya}</p>
+
+                                <hr>
+
+                                <p><strong>Pesanan Anda:</strong></p>
+                                ${daftarPesanan}
+
+                                <p class="mt-2"><strong>Total Pesanan:</strong> ${totalItem}</p>
+
+                                <p class="mt-1"><strong>Total Harga:</strong> <span style="font-size: 1.1em;">Rp ${totalHarga.toLocaleString('id-ID')}</span></p>
+                            </div>
+
+                        </div>
+                    `;
+                });
             }
 
             document.getElementById("listPesanan").innerHTML = html;
-        }
+        });
+}
+
 
         document.getElementById("floatingOrdersBtn").addEventListener("click", function() {
             var modal = new bootstrap.Modal(document.getElementById('ordersModal'));
             modal.show();
 
-            renderPesananSaya(pesananSayaCache);
+            loadPesananSaya();
         });
 
         function flipCard(element) {
