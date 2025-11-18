@@ -680,10 +680,15 @@
             }
         });
 
-        function updateFloatingCount() {
+        function updateFloatingCartCount() {
             const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-            const floatingBtn = document.querySelector('.floating-button');
+            const floatingBtn = document.querySelector('#floatingCartBtn');
             floatingBtn.style.setProperty('--count', `"${totalQty}"`);
+        }
+
+        function updateFloatingOrderCount(count) {
+            const floatingBtn = document.querySelector('#floatingOrdersBtn');
+            floatingBtn.style.setProperty('--count', `"${count}"`);
         }
 
         // open order modal
@@ -735,9 +740,7 @@
             }
             orderModal.hide();
             localStorage.setItem('cart', JSON.stringify(cart));
-            updateFloatingCount(); // update jumlah di floating button
-            // renderCart();
-            // cartModal.show();
+            updateFloatingCartCount();
         });
 
         document.getElementById('floatingCartBtn').addEventListener('click', () => {
@@ -781,6 +784,7 @@
                         cart = []; // kosongkan keranjang
                         renderCart();
                         cartModal.hide();
+                        loadPesananSaya();
                     } else {
                         alert("Gagal menyimpan pesanan!");
                     }
@@ -843,58 +847,58 @@
             document.getElementById('totalDisplay').textContent = `Rp ${subtotal.toLocaleString('id-ID')}`;
 
             localStorage.setItem('cart', JSON.stringify(cart));
-            updateFloatingCount(); // update badge
+            updateFloatingCartCount(); // update badge
         }
 
-        function loadPesananSaya() { 
-    fetch(`/order/me/${mejaId}`)
-        .then(res => res.json())
-        .then(data => {
-            let html = "";
+        function loadPesananSaya() {
+            fetch(`/order/me/${mejaId}`)
+                .then(res => res.json())
+                .then(data => {
+                    let html = "";
 
-            if (data.length === 0) {
-                html = `
+                    if (data.length === 0) {
+                        html = `
                     <div class="p-3 border rounded bg-light text-center">
                         <p><strong>Belum ada pesanan</strong></p>
                     </div>
                 `;
-            } else {
-                data.forEach(order => {
+                    } else {
+                        data.forEach(order => {
 
-                    let itemsHtml = "";
-                    let daftarPesanan = "";
-                    let totalItem = 0;
-                    let totalHarga = 0;
+                            let itemsHtml = "";
+                            let daftarPesanan = "";
+                            let totalItem = 0;
+                            let totalHarga = 0;
 
-                    order.pesanan.forEach(item => {
+                            order.pesanan.forEach(item => {
 
-                        // tampil list di atas (badge jumlah)
-                        itemsHtml += `
+                                // tampil list di atas (badge jumlah)
+                                itemsHtml += `
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 ${item.nama_menu}
                                 <span class="badge bg-primary rounded-pill">${item.jumlah}</span>
                             </li>
                         `;
 
-                        let hargaSatuan = parseInt(item.harga);
-                        let subtotal = hargaSatuan * parseInt(item.jumlah);
+                                let hargaSatuan = parseInt(item.harga);
+                                let subtotal = hargaSatuan * parseInt(item.jumlah);
 
-                        // list per item yang baru
-                        daftarPesanan += `
+                                // list per item yang baru
+                                daftarPesanan += `
                             <p class="mb-1">• ${item.nama_menu} — ${item.jumlah} × Rp ${hargaSatuan.toLocaleString('id-ID')} = <strong>Rp ${subtotal.toLocaleString('id-ID')}</strong></p>
                         `;
 
-                        totalItem += parseInt(item.jumlah);
-                        totalHarga += subtotal;
-                    });
+                                totalItem += parseInt(item.jumlah);
+                                totalHarga += subtotal;
+                            });
 
-                    // status badge
-                    let statusClass = "bg-secondary";
-                    if (order.status === "pending") statusClass = "bg-warning text-dark";
-                    else if (order.status === "cooking") statusClass = "bg-info text-dark";
-                    else if (order.status === "done") statusClass = "bg-success";
+                            // status badge
+                            let statusClass = "bg-secondary";
+                            if (order.status === "pending") statusClass = "bg-warning text-dark";
+                            else if (order.status === "cooking") statusClass = "bg-info text-dark";
+                            else if (order.status === "done") statusClass = "bg-success";
 
-                    html += `
+                            html += `
                         <div class="mb-3 border rounded p-2">
 
                             <ul class="list-group mb-2">
@@ -918,19 +922,20 @@
 
                         </div>
                     `;
+                        });
+                    }
+
+                    document.getElementById("listPesanan").innerHTML = html;
+                    updateFloatingOrderCount(data.length)
                 });
-            }
-
-            document.getElementById("listPesanan").innerHTML = html;
-        });
-}
-
+        }
 
         document.getElementById("floatingOrdersBtn").addEventListener("click", function() {
             var modal = new bootstrap.Modal(document.getElementById('ordersModal'));
             modal.show();
 
             loadPesananSaya();
+
         });
 
         function flipCard(element) {
@@ -959,7 +964,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             loadPesananSaya();
-            updateFloatingCount();
+            updateFloatingCartCount();
         });
     </script>
 </body>

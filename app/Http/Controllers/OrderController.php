@@ -66,20 +66,6 @@ class OrderController extends Controller
         $orderKey = Str::uuid(); // ID unik per transaksi
         $antrian  = $this->generateQueueNumber();
 
-        // foreach ($cart as $item) {
-        //     Order::create([
-        //         'meja_id'   => $meja_id,
-        //         'order_key' => $orderKey,
-        //         'antrian' => $antrian,
-        //         'nama'      => $item['name'],
-        //         'harga'     => $item['price'],
-        //         'jumlah'    => $item['qty'],
-        //         'catatan'   => $item['note'] ?? null,
-        //         "payment_method" => $payment ?? null,
-        //         'status'    => 'pending'
-        //     ]);
-        // }
-
         $orders = [];
 
         foreach ($cart as $item) {
@@ -176,7 +162,6 @@ class OrderController extends Controller
 
     public function konfirmasiPesanan($order_key)
     {
-        // Ambil salah satu order (cukup first karena sama-sama 1 order_key)
         $order = Order::where('order_key', $order_key)->first();
 
         if (!$order) {
@@ -190,17 +175,28 @@ class OrderController extends Controller
             case 'pending':
                 $nextStatus = 'cooking';
                 break;
+
             case 'cooking':
                 $nextStatus = 'finished';
                 break;
+
             case 'finished':
-                $nextStatus = 'finished'; // tidak berubah lagi
+                $nextStatus = 'finished';
                 break;
         }
 
-        // Update semua item dengan order_key sama
-        Order::where('order_key', $order_key)
-            ->update(['status' => $nextStatus]);
+        // Jika berubah menjadi finished, set finished_at
+        if ($order->status !== 'finished' && $nextStatus === 'finished') {
+            Order::where('order_key', $order_key)
+                ->update([
+                    'status'       => $nextStatus,
+                    'finished_at'  => now()
+                ]);
+        } else {
+            // update biasa
+            Order::where('order_key', $order_key)
+                ->update(['status' => $nextStatus]);
+        }
 
         return redirect()->back()->with('success', "Status pesanan diubah menjadi {$nextStatus}.");
     }
@@ -216,13 +212,19 @@ class OrderController extends Controller
     public function orderMe($meja_id)
     {
         $orders = Order::where('meja_id', $meja_id)
+            ->where(function ($q) {
+                $q->where('status', '!=', 'finished')
+                    ->orWhere(function ($q2) {
+                        $q2->where('status', 'finished')
+                            ->where('finished_at', '>=', now()->subMinute());
+                    });
+            })
             ->orderBy('created_at', 'asc')
             ->get()
             ->groupBy('order_key')
             ->map(function ($items) {
                 $firstItem = $items->first();
 
-                // Hitung jumlah antrian sebelum pesanan ini (global, semua meja)
                 $beforeCount = Order::whereDate('created_at', today())
                     ->where('created_at', '<', $firstItem->created_at)
                     ->whereIn('status', ['pending', 'cooking'])
@@ -237,6 +239,7 @@ class OrderController extends Controller
                         return [
                             'nama_menu' => $i->nama,
                             'jumlah'    => $i->jumlah,
+                            'harga'     => $i->harga,
                         ];
                     })->values()
                 ];
