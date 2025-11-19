@@ -148,9 +148,13 @@ class OrderController extends Controller
         Log::info($rows);
 
         $orders = $rows->groupBy('order_key')->map(function ($group) {
+            $first = $group->first();
+
             return (object)[
-                'meja_id'       => $group->first()->meja_id,
+                'meja_id'       => $first->meja_id,
+                'time'          => $first->created_at->format('Y-m-d H:i:s'),
                 'total_belanja' => $group->sum(fn($item) => $item->harga * $item->jumlah),
+                'payment_method' => $first->payment_method,
                 'detail'        => $group->map(function ($item) {
                     return $item->nama . ' (' . $item->jumlah . 'x)';
                 })->implode(', '),

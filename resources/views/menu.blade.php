@@ -435,7 +435,7 @@
     </nav>
 
     <!-- ===== LOCATION ===== -->
-    <div class="container my-4 text-center" id="location" data-meja-id="{{ $meja->id }}">
+    <div class="container my-4 text-center" id="location" data-meja-id="{{ $meja->nomorMeja }}">
         <span class="location-pill">
             <i class="fa-solid fa-map-pin"></i>
             Ashbab Coffe • Meja {{ $meja->nomorMeja }}

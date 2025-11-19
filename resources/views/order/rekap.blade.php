@@ -33,6 +33,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>Waktu Transaksi</th>
                         <th>Nomor Meja</th>
                         <th>Total Belanja</th>
                         <th>Jenis Pembayaran</th>
@@ -43,9 +44,10 @@
                     @foreach($orders as $i => $order)
                     <tr>
                         <td>{{ $i + 1 }}</td>
+                        <td>{{ $order->time ?? '-' }}</td>
                         <td>Meja Nomor {{ $order->meja_id ?? '-' }}</td>
                         <td>Rp. {{ number_format($order->total_belanja, 0, ',', '.') }}</td>
-                        <td>-</td>
+                        <td>{{ $order->payment_method ?? '-' }}</td>
                         <td>
                             @if($order->detail)
                             <ul>
