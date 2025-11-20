@@ -66,6 +66,8 @@ class OrderController extends Controller
         $orderKey = Str::uuid(); // ID unik per transaksi
         $antrian  = $this->generateQueueNumber();
 
+        $now = now()->setTimezone('UTC')->toDateTimeString();
+
         $orders = [];
 
         foreach ($cart as $item) {
@@ -79,8 +81,8 @@ class OrderController extends Controller
                 'catatan'   => $item['note'] ?? null,
                 'payment_method' => $payment ?? "cash",
                 'status'    => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => $now,
+                'updated_at' => $now,
             ];
         }
 
@@ -127,8 +129,6 @@ class OrderController extends Controller
         $jenis = $request->get('jenis', 'harian'); // default harian
         $tanggal = $request->get('tanggal', date('Y-m-d'));
 
-        Log::info($jenis);
-
         // Query dasar
         $query = Order::where('status', 'finished');
 
@@ -152,7 +152,9 @@ class OrderController extends Controller
 
             return (object)[
                 'meja_id'       => $first->meja_id,
-                'time'          => $first->created_at->format('Y-m-d H:i:s'),
+                'time'          => $first->created_at
+                    ->setTimezone('Asia/Makassar')
+                    ->format('Y-m-d H:i:s'),
                 'total_belanja' => $group->sum(fn($item) => $item->harga * $item->jumlah),
                 'payment_method' => $first->payment_method,
                 'detail'        => $group->map(function ($item) {
