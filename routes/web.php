@@ -29,6 +29,9 @@ Route::post('/order/checkout/{meja:nomorMeja}', [OrderController::class, 'checko
 
 Route::get('/order/me/{meja_id}', [OrderController::class, 'orderMe']);
 
+Route::get('/meja/status', [MejaController::class, 'status'])->name('meja.status');
+Route::get('/meja/status/qr-download', [MejaController::class, 'downloadStatusQR'])->name('meja.status.qr');
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -39,9 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('minuman', MinumanController::class)->except(['show', 'create', 'edit']);
 
     Route::resource('meja', MejaController::class)->except(['show', 'create', 'edit']);
+    Route::post('/meja/{id}/toggle', [MejaController::class, 'toggleStatus'])->name('meja.toggle');
 
     Route::resource('bank', BankController::class);
-
 
     Route::get('/order/baru', [OrderController::class, 'orderBaru'])
         ->name('order.baru');

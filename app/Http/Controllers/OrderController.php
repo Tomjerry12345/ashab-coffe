@@ -88,6 +88,12 @@ class OrderController extends Controller
 
         Order::insert($orders);
 
+
+        $meja = Meja::find($meja_id);
+        if ($meja) {
+            $meja->update(['status' => 'terisi', 'terisi_sejak' => Carbon::now()]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Pesanan berhasil disimpan!',

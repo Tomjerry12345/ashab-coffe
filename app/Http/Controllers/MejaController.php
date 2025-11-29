@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Meja;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class MejaController extends Controller
@@ -14,6 +15,12 @@ class MejaController extends Controller
     {
         $mejas = Meja::orderBy('nomorMeja', 'asc')->get();
         return view('meja', compact('mejas'));
+    }
+
+    public function status()
+    {
+        $mejas = Meja::orderBy('nomorMeja', 'asc')->get();
+        return view('meja-status', compact('mejas'));
     }
 
     /**
@@ -52,6 +59,37 @@ class MejaController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Meja berhasil ditambahkan!');
+    }
+
+    public function toggleStatus($id)
+    {
+        $meja = Meja::findOrFail($id);
+
+        if ($meja->status === 'kosong') {
+            // ubah ke terisi + isi timestamp
+            $meja->status = 'terisi';
+            $meja->terisi_sejak = Carbon::now();
+        } else {
+            // ubah ke kosong + reset timestamp
+            $meja->status = 'kosong';
+            $meja->terisi_sejak = null;
+        }
+
+        $meja->save();
+
+        return back()->with('success', 'Status meja berhasil diupdate!');
+    }
+
+    public function downloadStatusQR()
+    {
+        $url = env('APP_URL') . "/meja/status";
+
+        // Generate QR
+        $qrImage = file_get_contents("https://api.qrserver.com/v1/create-qr-code/?data=" . urlencode($url) . "&size=300x300");
+
+        return response($qrImage)
+            ->header('Content-Type', 'image/png')
+            ->header('Content-Disposition', 'attachment; filename="QR-Status-Meja.png"');
     }
 
     public function destroy(Meja $meja)

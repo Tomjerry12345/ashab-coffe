@@ -3,8 +3,94 @@
 @section('title', 'Rekap Pesanan')
 
 @section('content')
-<div class="container-fluid px-4 py-4">
 
+<style>
+    @media print {
+
+        /* Ubah background dan font halaman print */
+        body {
+            background: #fff;
+            font-family: "Poppins", Arial, sans-serif;
+            padding: 20px;
+        }
+
+        /* Desain container invoice */
+        .dt-print-view {
+            border: 3px solid #1a73e8;
+            border-radius: 10px;
+            padding: 25px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Header INVOICE besar */
+        .dt-print-view h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a73e8;
+            text-align: center;
+            border-bottom: 3px solid #1a73e8;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Styling tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        thead {
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 2px solid #1a73e8;
+            background: #1a73e8 !important;
+            color: #fff !important;
+            text-transform: uppercase;
+        }
+
+        th,
+        td {
+            border: 1px solid #1a73e8;
+            padding: 10px;
+            font-size: 15px;
+            text-align: left;
+        }
+
+        /* Footer total besar */
+        .dt-print-view .total-footer {
+            margin-top: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: right;
+            color: #1a73e8;
+        }
+
+        /* Dekorasi garis lengkung (optional biar mirip invoice kamu) */
+        .dt-print-view::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #1a73e8, #fbbc05);
+        }
+
+        .dt-print-view::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #fbbc05, #1a73e8);
+        }
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
     <!-- Form Rekap -->
     <div class="card mb-3">
         <div class="card-body">
@@ -83,7 +169,39 @@
 
         $('#rekapTable').DataTable({
             dom: 'Bfrtip',
-            buttons: ['excel', 'pdf', 'print']
+            buttons: [
+                'excel',
+                {
+                    extend: 'pdf',
+                    title: '',
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+                {
+                    extend: 'print',
+                    title: '',
+                    customize: function(win) {
+                        $(win.document.body)
+                            .css('font-family', 'Poppins, Arial')
+                            .css('padding', '20px')
+                            .prepend(`
+                            <div class="dt-print-view">
+                                <h1>INVOICE</h1>
+                                <p><strong>Tanggal cetak:</strong> ${new Date().toLocaleDateString()}</p>
+                                <p><strong>Jenis rekapan:</strong> {{ request('jenis') }}</p>
+                            </div>
+                        `);
+
+                        // Tambah total di bawah tabel
+                        $(win.document.body).append(`
+                        <div class="total-footer">
+                            Total Semua Pesanan: Rp {{ number_format($orders->sum('total_belanja'),0,',','.') }}
+                        </div>
+                    `);
+                    }
+                }
+            ]
         });
 
         // Fungsi untuk menampilkan input tanggal hanya jika jenis = 'tanggal'
