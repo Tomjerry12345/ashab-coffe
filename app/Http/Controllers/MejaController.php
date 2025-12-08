@@ -66,11 +66,9 @@ class MejaController extends Controller
         $meja = Meja::findOrFail($id);
 
         if ($meja->status === 'kosong') {
-            // ubah ke terisi + isi timestamp
             $meja->status = 'terisi';
             $meja->terisi_sejak = Carbon::now();
         } else {
-            // ubah ke kosong + reset timestamp
             $meja->status = 'kosong';
             $meja->terisi_sejak = null;
         }

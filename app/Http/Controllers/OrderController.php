@@ -88,10 +88,14 @@ class OrderController extends Controller
 
         Order::insert($orders);
 
+        $meja = Meja::where('nomorMeja', $meja_id)->first();
 
-        $meja = Meja::find($meja_id);
         if ($meja) {
-            $meja->update(['status' => 'terisi', 'terisi_sejak' => Carbon::now()]);
+            $meja->status = 'terisi';
+            $meja->terisi_sejak = Carbon::now();
+            $meja->save();
+        } else {
+            Log::error('meja tidak ditemukan berdasarkan nomorMeja: ' . $meja_id);
         }
 
         return response()->json([
