@@ -14,6 +14,7 @@ class Order extends Model
         'meja_id',
         'order_key',
         'nama',
+        'tipe',
         'harga',
         'jumlah',
         'catatan',

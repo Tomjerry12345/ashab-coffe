@@ -76,6 +76,7 @@ class OrderController extends Controller
                 'order_key' => $orderKey,
                 'antrian'   => $antrian,
                 'nama'      => $item['name'],
+                'tipe'      => $item['kategori'],
                 'harga'     => $item['price'],
                 'jumlah'    => $item['qty'],
                 'catatan'   => $item['note'] ?? null,
@@ -85,6 +86,8 @@ class OrderController extends Controller
                 'updated_at' => $now,
             ];
         }
+
+        // Log::debug($cart);
 
         Order::insert($orders);
 
@@ -121,7 +124,17 @@ class OrderController extends Controller
                 'total'         => $group->sum(function ($item) {
                     return $item->harga * $item->jumlah;
                 }),
-                'items'         => $group->map(function ($item) {
+                // 🍽 MAKANAN
+                'makanan' => $group->where('tipe', 'makanan')->map(function ($item) {
+                    return (object)[
+                        'nama'   => $item->nama,
+                        'jumlah' => $item->jumlah,
+                        'harga'  => $item->harga,
+                    ];
+                })->values(),
+
+                // 🥤 MINUMAN
+                'minuman' => $group->where('tipe', 'minuman')->map(function ($item) {
                     return (object)[
                         'nama'   => $item->nama,
                         'jumlah' => $item->jumlah,
